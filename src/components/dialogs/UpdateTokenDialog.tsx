@@ -9,7 +9,7 @@ import { upToken } from '@/services/graphql/account';
 import { useLocalStorage } from "@/utils/LocalStorageManager";
 import { useValueGood } from "@/stores/valueGood";
 import Message from '@/components/MessModal/index';
-import { useErrorMess } from '@/hooks/useErrorMess';
+import { useErrorMess as formatErrorMessage } from '@/hooks/useErrorMess';
 import { GRK_SIZES } from "@/types/common";
 import { Spin, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -122,7 +122,7 @@ export function UpdateTokenDialog({
 
       // @ts-ignore
       const isSuccess = await upTokenSet(token.id, walletAddress, BigInt(config).toString());
-      console.log("isSuccess:", isSuccess, useErrorMess(isSuccess, t))
+      console.log("isSuccess:", isSuccess, formatErrorMessage(isSuccess, t))
       if (isSuccess === true) {
         messageApi.open({
           type: 'success',
@@ -141,7 +141,7 @@ export function UpdateTokenDialog({
         }
         messageApi.open({
           type: 'error',
-          content: useErrorMess(isSuccess, t) + yz,
+          content: formatErrorMessage(isSuccess, t) + yz,
         });
       }
     } catch (error) {
@@ -161,7 +161,7 @@ export function UpdateTokenDialog({
     setSpinning(true)
     try {
       const isSuccess = await lockToken(token.id, walletAddress);
-      if (isSuccess) {
+      if (isSuccess === true) {
         messageApi.open({
           type: 'success',
           content: t('common.mess.success'),
