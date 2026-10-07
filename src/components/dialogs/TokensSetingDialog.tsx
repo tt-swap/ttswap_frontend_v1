@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from "react";
@@ -7,13 +7,13 @@ import { TokenIcon } from "../common/TokenIcon";
 import useWallet from "@/hooks/useWallet";
 import { marketToken } from '@/services/graphql/account';
 import { useLocalStorage } from "@/utils/LocalStorageManager";
-import { useValueGood } from "@/stores/valueGood";
-import Message from '@/components/MessModal/index';
-import { useErrorMess } from '@/hooks/useErrorMess';
+// import { useValueGood } from "@/stores/valueGood";
+// import Message from '@/components/MessModal/index';
+// import { useErrorMess } from '@/hooks/useErrorMess';
 import { GRK_SIZES } from "@/types/common";
 import { Spin, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useGlobalLoading } from '@/stores/globalLoading';
+// import { useGlobalLoading } from '@/stores/globalLoading';
 import CreatModal from "./creatModal";
 import { Settings, Store, RefreshCw } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
@@ -33,18 +33,18 @@ interface UpdateTokenDialogProps {
 }
 
 interface TokenConfig {
-    investor: number;
-    operator: number;
-    portal: number;
-    recommender: number;
-    user: number;
-    agreement: number;
-    MaxLiquidity: number;
-    isvalue: number;
-    islock: number;
-    isapply: number;
-    safeLineUpper: number;
+    liquidFee: number;
+    operatorFee: number;
+    gateFee: number;
+    referFee: number;
+    customerFee: number;
+    platformFee: number;
+    limitPower: number;
+    isValueGood: number;
+    isFreeze: number;
+    isPromise: number;
     safeLineLower: number;
+    safeLineUpper: number;
 }
 
 export function TokensSetingDialog({
@@ -76,7 +76,7 @@ export function TokensSetingDialog({
     const [referrerCommission, setReferrerCommission] = useState(15); // 推荐者分佣比例 - 一格1%，最多31格
     const [userCommission, setUserCommission] = useState(10); // 用户分佣比例 - 一格1%，最多31格
     const [protocolCommission, setProtocolCommission] = useState(9); // 协议分佣比例 - 一格1%，最多31格
-    const [maxLeverageMultiplier, setMaxLeverageMultiplier] = useState(1); // 最大流动性加强倍数 - 一格1倍，最多31格
+    const [limitPower, setlimitPower] = useState(1); // 最大流动性加强倍数 - 一格1倍，最多31格
     const [safeLineUpper, setsafeLineUpper] = useState(100); // 最大流动性加强倍数 - 一格1倍，最多31格
     const [safeLineLower, setsafeLineLower] = useState(60); // 最大流动性加强倍数 - 一格1倍，最多31格
 
@@ -426,13 +426,13 @@ export function TokensSetingDialog({
                                                     </span>
                                                 </div>
                                                 <span className="text-xs sm:text-sm px-1.5 sm:px-2 py-0.5 bg-[#0fb981]/10 text-[#0fb981] rounded whitespace-nowrap flex-shrink-0">
-                                                    {maxLeverageMultiplier}倍
+                                                    {limitPower}倍
                                                 </span>
                                             </div>
                                             <Slider
-                                                id="maxLeverageMultiplier"
-                                                value={[maxLeverageMultiplier]}
-                                                onValueChange={(value) => setMaxLeverageMultiplier(value[0])}
+                                                id="limitPower"
+                                                value={[limitPower]}
+                                                onValueChange={(value) => setlimitPower(value[0])}
                                                 min={0}
                                                 max={31}
                                                 step={1}
@@ -559,6 +559,57 @@ export function TokensSetingDialog({
                                             />
                                         </div>
 
+                                        {/* 分割线 */}
+                                        <div className="border-t pt-3 sm:pt-4">
+                                            <p className="text-xs sm:text-sm mb-2 sm:mb-3">安全阈值</p>
+                                        </div>
+
+                                        {/* 最大安全阈值 */}
+                                        <div className="space-y-2 sm:space-y-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
+                                                    <Label htmlFor="safeLineUpper" className="text-xs sm:text-sm whitespace-nowrap">最大安全阈值</Label>
+                                                    {/* <span className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                                                        一格1倍，最多31格
+                                                    </span> */}
+                                                </div>
+                                                <span className="text-xs sm:text-sm px-1.5 sm:px-2 py-0.5 bg-[#0fb981]/10 text-[#0fb981] rounded whitespace-nowrap flex-shrink-0">
+                                                    {safeLineUpper}
+                                                </span>
+                                            </div>
+                                            <Slider
+                                                id="safeLineUpper"
+                                                value={[safeLineUpper]}
+                                                onValueChange={(value) => setsafeLineUpper(value[0])}
+                                                min={0}
+                                                max={200}
+                                                step={1}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        {/* 最小安全阈值 */}
+                                        <div className="space-y-2 sm:space-y-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
+                                                    <Label htmlFor="safeLineLower" className="text-xs sm:text-sm whitespace-nowrap">最小安全阈值</Label>
+                                                    {/* <span className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                                                        一格1倍，最多31格
+                                                    </span> */}
+                                                </div>
+                                                <span className="text-xs sm:text-sm px-1.5 sm:px-2 py-0.5 bg-[#0fb981]/10 text-[#0fb981] rounded whitespace-nowrap flex-shrink-0">
+                                                    {safeLineLower}
+                                                </span>
+                                            </div>
+                                            <Slider
+                                                id="safeLineLower"
+                                                value={[safeLineLower]}
+                                                onValueChange={(value) => setsafeLineLower(value[0])}
+                                                min={0}
+                                                max={100}
+                                                step={1}
+                                                className="w-full"
+                                            />
+                                        </div>
                                         {/* 更新按钮 */}
                                         <div className="pt-3 sm:pt-4">
                                             <Button
